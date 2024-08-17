@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom"
 import { PinataProvider } from './context/PinataContext'
 import Toast from "./components/toast/Toast.tsx"
+import './style.css'
 
 function App(): React.ReactElement {
 

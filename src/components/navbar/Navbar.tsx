@@ -36,9 +36,12 @@ function Navbar(): React.ReactElement {
 
     return (
         <div className="flex items-center justify-between px-6 md:px-48 py-4 md:py-6 w-full">
-            <div onClick={() => navigate('/')} className="flex items-start justify-center gap-1 md:gap-2 hover:cursor-pointer">
-                <img src="/assets/pinlogo.png" className="w-[17px] mb-1 md:w-[20px] h-auto object-center" />
-                <h1 className="text-lg md:text-2xl font-bold font-moderustic">PinataDrive</h1>
+            <div onClick={() => window.location.reload()} className="flex flex-col items-start justify-center hover:cursor-pointer">
+                <div className="flex items-center justify-center gap-1 md:gap-2">
+                    <img src="/assets/pinlogo.png" className="w-[17px] mb-1 md:w-[20px] h-auto object-center" />
+                    <h1 className="text-lg md:text-2xl font-bold font-moderustic">PinataDrive</h1>
+                </div>
+                <p className="opacity-60 text-xs md:text-sm font-medium">By Jeet</p>
             </div>
 
             <div className="text-xs md:text-sm flex items-center justify-center gap-3 md:gap-5">
