@@ -47,7 +47,7 @@ export const PinataProvider: React.FC<PinataContextProps> = (props) => {
         let themeMode = false
         const root = document.documentElement
 
-        if (localStorage.getItem('theme') === 'false') 
+        if (localStorage.getItem('theme') === 'true') 
             themeMode = Boolean(localStorage.getItem('theme'))
 
         if (themeMode) {
