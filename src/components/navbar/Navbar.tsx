@@ -1,10 +1,8 @@
-import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import connectMetaMask from "../../utils/connectMetaMask"
 import { usePinataContext } from '../../context/PinataContext'
 
 function Navbar(): React.ReactElement {
-    const navigate = useNavigate()
     const pinataContext = usePinataContext()
 
     let theme = false
