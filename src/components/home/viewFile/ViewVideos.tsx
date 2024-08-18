@@ -86,7 +86,7 @@ function ViewVideos(): React.ReactElement {
                         }} className='hover:opacity-60 h-full'>
                             {filetype[0] === 'video' &&
                                 <div className='flex items-center justify-center w-full h-full'>
-                                    <video src={file.url} autoPlay playsInline muted className='rounded-lg w-full h-full object-cover'></video>
+                                    <video src={file.url} muted className='rounded-lg w-full h-full object-cover'></video>
                                     <i className="fa-solid fa-play absolute text-white shadow-lg text-3xl md:text-6xl"></i>
                                 </div>}
                         </div>

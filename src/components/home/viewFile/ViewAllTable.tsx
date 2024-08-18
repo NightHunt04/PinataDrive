@@ -167,7 +167,7 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
                                     
                                     {filetype[0] === 'video' &&   
                                         <div className='flex items-center justify-center w-full h-full'>
-                                            <video src={file.url} autoPlay playsInline muted className='rounded-md w-full h-full object-cover'></video>
+                                            <video src={file.url} muted className='rounded-md w-full h-full object-cover'></video>
                                             <i className="fa-solid fa-play absolute text-white shadow-lg text-md md:text-lg"></i>
                                         </div>}
                                     
