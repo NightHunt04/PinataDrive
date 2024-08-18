@@ -18,6 +18,12 @@ interface params {
     setDeleteAllLoader: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+interface ViewStatus {
+    view: boolean
+    url: string
+    type: string
+}
+
 function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton, deleteSelectedItems, setDeleteSelectedItems }: params): React.ReactElement {
     const pinataContext = usePinataContext()
 
@@ -26,6 +32,7 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
     const [selectedNumber, setSelectedNumber] = useState<{ [key: number]: boolean }>({})
     const [selectedNumberInd, setSelectedNumberInd] = useState<bigint[]>([])
     const [deleteLoader, setDeleteLoader] = useState<boolean>(false)
+    const [viewFileStatus, setViewFileStatus] = useState<ViewStatus>({view: false, url: '', type: ''})
 
     const handleDelete = async(ind: bigint[], hash: string[]): Promise<void> => {
         setDeleteLoader(true)
@@ -131,10 +138,30 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
 
                 return (
                     <div key={short.generate()} className={`${selectedNumber[index] ? 'bg-[#b6b6b6] dark:bg-[#1d1d1d]' : 'bg-[#e8e8e8] dark:bg-[#2b2b2b]'} transition-all duration-300 flex items-center justify-between p-2 row-span-1 relative h-full w-full rounded-lg shadow-lg outline-none `}>
+                            {viewFileStatus.view && viewFileStatus.url !== '' &&
+                            <div className='w-full flex flex-col items-center justify-center h-screen z-40 fixed inset-0 bg-[#0000003f]'>
+                                <div className={`w-[90%] md:w-[40%] max-h-screen flex items-center justify-center relative`}>
+                                <button onClick={() => {
+                                    setViewFileStatus({ view: false, url: '', type: ''})
+                                }} className='absolute text-md md:text-xl z-50 flex items-center justify-center w-[20px] h-[20px] md:w-[30px] md:h-[30px] rounded-full right-2 top-2 text-gray-100 hover:bg-red-800 bg-red-700'><i className="fa-solid fa-xmark"></i></button>
+
+                                    {viewFileStatus.type === 'image' &&
+                                    <a href={viewFileStatus.url} target='_blank' className='hover:cursor-pointer hover:bg-[#1b1b1b7e]'><img src={viewFileStatus.url} alt="img" className='rounded-lg w-full h-full object-cover' /></a>}
+                                    
+                                    {viewFileStatus.type === 'video' &&  
+                                        <a href={viewFileStatus.url} target='_blank'> 
+                                        <div className='flex items-center justify-center w-full h-full'>
+                                            <video src={viewFileStatus.url} autoPlay playsInline muted className='rounded-lg w-full h-full object-cover'></video>
+                                        </div></a>}
+                                </div>
+                            </div>}
+
                             <input checked={selectedNumber[index] || false} onChange={() => handleSelectCheck(index, file.ind)} type="checkbox" className={`absolute hover:cursor-pointer w-[10px] h-[10px] md:w-[13px] md:h-[13px] -left-4 md:-left-6 z-40`}/>
 
                             <div className='w-[45px] h-[45px] flex items-center justify-center overflow-hidden'>
-                                <a href={file.url} target='_blank' className='outline-none w-full h-full hover:cursor-pointer'>
+                                <div onClick={() => {
+                                    setViewFileStatus({ view: true, url: file.url, type: filetype[0]})
+                                }} className='outline-none w-full h-full hover:cursor-pointer'>
                                     {filetype[0] === 'image' &&
                                         <img src={file.url} alt="img" className='rounded-md w-full h-full object-cover' />}
                                     
@@ -148,7 +175,7 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
                                         <div className='w-full h-full row-span-1 rounded-md flex flex-col items-center justify-center'>
                                             <i className="text-lg md:text-xl fa-solid fa-file"></i>
                                         </div>}
-                                </a>
+                                </div>
                             </div>
 
                             <div className='flex flex-col gap-1 md:gap-0 md:flex-row items-start md:items-center justify-between w-[60%]'>

@@ -10,10 +10,17 @@ interface _File {
     fileType: string
 }
 
+interface ViewStatus {
+    view: boolean
+    url: string
+    type: string
+}
+
 function ViewImages(): React.ReactElement {
     const [deleteFileNumber, setDeleteFileNumber] = useState<number | null>(-1)
     const [deleteLoader, setDeleteLoader] = useState<boolean>(false)
     const pinataContext = usePinataContext()
+    const [viewFileStatus, setViewFileStatus] = useState<ViewStatus>({view: false, url: '', type: ''})
 
     const handleDelete = async(ind: bigint[], hash: string[]): Promise<void> => {
         setDeleteLoader(true)
@@ -25,7 +32,18 @@ function ViewImages(): React.ReactElement {
     }
 
     return (
-        <div className={`grid ${pinataContext && pinataContext?.images.length === 0 ? 'grid-cols-1' : 'grid-cols-2 md:grid-cols-3'} w-full items-start justify-start gap-3`}>
+        <div className={`grid ${pinataContext && pinataContext?.images.length === 0 ? 'grid-cols-1' : 'grid-cols-2 md:grid-cols-3'} w-full items-start justify-start gap-3 relative`}>
+            {viewFileStatus.view && viewFileStatus.url !== '' &&
+                <div className='w-full flex flex-col items-center justify-center h-screen z-40 fixed inset-0 bg-[#0000003f]'>
+                    <div className={`w-[90%] md:w-[40%] max-h-screen flex items-center justify-center relative`}>
+                    <button onClick={() => {
+                        setViewFileStatus({ view: false, url: '', type: ''})
+                    }} className='absolute text-md md:text-xl z-50 flex items-center justify-center w-[20px] h-[20px] md:w-[30px] md:h-[30px] rounded-full right-2 top-2 text-gray-100 hover:bg-red-800 bg-red-700'><i className="fa-solid fa-xmark"></i></button>
+                        {viewFileStatus.type === 'image' &&
+                        <a href={viewFileStatus.url} target='_blank' className='hover:cursor-pointer hover:bg-[#1b1b1b7e]'><img src={viewFileStatus.url} alt="img" className='rounded-lg w-full h-full object-cover' /></a>}
+                    </div>
+                </div>}
+
             {pinataContext && pinataContext?.images.length === 0 &&
                 <div className='mt-10 flex flex-col items-center justify-center text-gray-800 dark:text-gray-100'>
                     <i className="text-4xl md:text-6xl fa-regular fa-folder-open"></i>
@@ -59,10 +77,12 @@ function ViewImages(): React.ReactElement {
                                 </div>
                             </div>}
 
-                        <a href={file.url} target='_blank' className='hover:opacity-60'>
+                        <div onClick={() => {
+                            setViewFileStatus({ view: true, url: file.url, type: filetype[0]})
+                        }} className='hover:opacity-60 h-full'>
                             {filetype[0] === 'image' &&
                                 <img src={file.url} alt="img" className='rounded-lg w-full h-full object-cover' />}
-                        </a>
+                        </div>
                         <div className='hidden flex-col items-start justify-start w-full gap-2 font-semibold'>
                             <p>Filename: {file.fileName}</p>
                             <p>Uploaded at: 3:06 pm Thursday, January, 2004</p>

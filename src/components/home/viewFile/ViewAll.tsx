@@ -10,9 +10,17 @@ interface _File {
     fileType: string
 }
 
+interface ViewStatus {
+    view: boolean
+    url: string
+    type: string
+}
+
 function ViewAll(): React.ReactElement {
     const [deleteFileNumber, setDeleteFileNumber] = useState<number | null>(-1)
     const [deleteLoader, setDeleteLoader] = useState<boolean>(false)
+
+    const [viewFileStatus, setViewFileStatus] = useState<ViewStatus>({view: false, url: '', type: ''})
     const pinataContext = usePinataContext()
 
     const handleDelete = async(ind: bigint[], hash: string[]): Promise<void> => {
@@ -33,6 +41,25 @@ function ViewAll(): React.ReactElement {
 
                 return (
                     <div key={short.generate()} className={`transition-all row-span-1 h-[150px] md:h-[300px] relative w-full rounded-lg shadow-lg outline-none bg-[#e8e8e8] dark:bg-[#2b2b2b] hover:cursor-pointer`}>
+                        {viewFileStatus.view && viewFileStatus.url !== '' &&
+                            <div className='w-full flex flex-col items-center justify-center h-screen z-40 fixed inset-0 bg-[#0000003f]'>
+                                <div className={`w-[90%] md:w-[40%] max-h-screen flex items-center justify-center relative`}>
+                                <button onClick={() => {
+                                    setViewFileStatus({ view: false, url: '', type: ''})
+                                }} className='absolute text-md md:text-xl z-50 flex items-center justify-center w-[20px] h-[20px] md:w-[30px] md:h-[30px] rounded-full right-2 top-2 text-gray-100 hover:bg-red-800 bg-red-700'><i className="fa-solid fa-xmark"></i></button>
+
+                                    {viewFileStatus.type === 'image' &&
+                                    <a href={viewFileStatus.url} target='_blank' className='hover:cursor-pointer hover:bg-[#1b1b1b7e]'><img src={viewFileStatus.url} alt="img" className='rounded-lg w-full h-full object-cover' /></a>}
+                                    
+                                    {viewFileStatus.type === 'video' &&   
+                                        <a href={viewFileStatus.url} target='_blank'>
+                                        <div className='flex items-center justify-center w-full h-full'>
+                                            <video src={viewFileStatus.url} autoPlay playsInline muted className='rounded-lg w-full h-full object-cover'></video>
+                                        </div></a>}
+                                </div>
+                            </div>}
+
+
                         <div onClick={() => { 
                                 if(deleteFileNumber === index)
                                     setDeleteFileNumber(-1) 
@@ -52,7 +79,9 @@ function ViewAll(): React.ReactElement {
                                 </div>
                             </div>}
 
-                        <a href={file.url} target='_blank' className='hover:opacity-60'>
+                        <div onClick={() => {
+                                setViewFileStatus({ view: true, url: file.url, type: filetype[0]})
+                            }} className='hover:opacity-60 h-full flex items-center justify-center'>
                             {filetype[0] === 'image' &&
                                 <img src={file.url} alt="img" className='rounded-lg w-full h-full object-cover' />}
                                 
@@ -67,7 +96,7 @@ function ViewAll(): React.ReactElement {
                                     <i className="text-3xl md:text-4xl fa-solid fa-file"></i>
                                     <p className='font-medium'>{file.fileName}</p>
                                 </div>}
-                        </a>
+                        </div>
                         <div className='hidden flex-col items-start justify-start w-full gap-2 font-semibold'>
                             <p>Filename: {file.fileName}</p>
                             <p>Uploaded at: 3:06 pm Thursday, January, 2004</p>
