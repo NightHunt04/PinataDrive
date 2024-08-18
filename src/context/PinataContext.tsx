@@ -78,7 +78,7 @@ export const PinataProvider: React.FC<PinataContextProps> = (props) => {
             
             let fetchedFiles = await pinataContext?.contract.methods.getFiles().call({ from : pinataContext?.account })
             fetchedFiles = fetchedFiles.filter((file: _File) => file.fileName !== '' && file.fileType !== '' && file)
-            console.log('fetched', fetchedFiles)
+            fetchedFiles.reverse()
             
             const fetchedImages = fetchedFiles.filter((file: _File) => file.fileType === 'image' || file.fileType.split('/')[0] === 'image' && file)
             const fetchedVideos = fetchedFiles.filter((file: _File) => file.fileType === 'video' || file.fileType.split('/')[0] === 'video' && file)

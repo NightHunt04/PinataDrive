@@ -58,6 +58,7 @@ const connectMetaMask = async (pinataContext: PinataContextInterface | null): Pr
                 pinataContext?.setContract(contractInstance)
                 let files = await contractInstance.methods.getFiles().call({ from : account[0] })
                 files = files.filter((file: _File) => file.fileName !== '' && file.fileType !== '' && file)
+                files.reverse()
 
                 const fetchedImages = files.filter((file: _File) => file.fileType === 'image' || file.fileType.split('/')[0] === 'image' && file)
                 const fetchedVideos = files.filter((file: _File) => file.fileType === 'video' || file.fileType.split('/')[0] === 'video' && file)

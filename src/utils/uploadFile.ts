@@ -77,7 +77,10 @@ async function uploadFile(pinataContext: PinataContextInterface, inFiles: File[]
             setUploadedFileCounter(0)
             
             if (success) {
-                const fetchedFiles = await pinataContext?.contract.methods.getFiles().call({ from : pinataContext?.account })
+                let fetchedFiles = await pinataContext?.contract.methods.getFiles().call({ from : pinataContext?.account })
+                fetchedFiles = fetchedFiles.filter((file: _File) => file.fileType !== '' && file.fileName !== '' && file)
+                fetchedFiles.reverse()
+
                 const fetchedImages = fetchedFiles.filter((file: _File) => file.fileType === 'image' || file.fileType.split('/')[0] === 'image' && file)
                 const fetchedVideos = fetchedFiles.filter((file: _File) => file.fileType === 'video' || file.fileType.split('/')[0] === 'video' && file)
                 let fetchedDocs = fetchedFiles.filter((file: _File) => (file.fileType !== 'video' && file.fileType !== 'image') && (file.fileType.split('/')[0] !== 'video' && file.fileType.split('/')[0] !== 'image') && file)
