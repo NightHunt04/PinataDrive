@@ -56,7 +56,7 @@ async function uploadFile(pinataContext: PinataContextInterface, inFiles: File[]
             console.log('throwinfg')
             pinata = new PinataSDK({
                 pinataJwt: pinataCustomJWT!,
-                pinataGatewayKey: pinataCustomGateway!
+                pinataGatewayKey: `https://${pinataCustomGateway!}`
             })
 
             pinataContext?.setToastMessage(`Uploading on your own gateway: ${pinataCustomGateway}`)
