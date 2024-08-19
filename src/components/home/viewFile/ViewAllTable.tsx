@@ -128,11 +128,10 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
             let hashes: string[] = []
             let storedPinataJWT: string[] = []
             let storedPinataGateWayKey: string[] = []
+
             pinataContext?.files.map((file: _File, index: number) => {
-                if (selectedNumber[index]) 
+                if (selectedNumber[index]) {
                     hashes.push(file.url.split('/')[4]?.split('?')[0])
-                
-                if (file.storedPinataJWT && file.storedPinataGatewayKey) {
                     storedPinataJWT.push(file.storedPinataJWT)
                     storedPinataGateWayKey.push(file.storedPinataGatewayKey)
                 }
