@@ -37,16 +37,34 @@ interface _File {
 
 
 async function uploadFile(pinataContext: PinataContextInterface, inFiles: File[], setInFiles: React.Dispatch<React.SetStateAction<File[]>>, setUploadingLoader: React.Dispatch<React.SetStateAction<boolean>>, setUploadedFileCounter: React.Dispatch<React.SetStateAction<number>>): Promise<void> {
+    // const cryptr = new Cryptr(import.meta.env.VITE_APP_CRYPTR_SECRET_KEY)
+
     if (!pinataContext?.account) {
         pinataContext?.setToastMessage('Connect MetaMask wallet by clicking on the button "Connect Wallet" down below in the space area.')
         pinataContext?.setIsToast(true)
     } else {
-        const pinata = new PinataSDK({
-            pinataJwt: import.meta.env.VITE_APP_PINATA_JWT,
-            pinataGatewayKey: import.meta.env.VITE_APP_PINATA_GATEWAY_KEY
-        })
+        const pinataCustomJWT = localStorage.getItem('userPinataJWT')
+        const pinataCustomGateway = localStorage.getItem('userPinataGateway')
+        const pinataCustomAccessAPI = localStorage.getItem('userPinataAccessAPI')
 
-        console.log('bot')
+        let pinata
+        if (!pinataCustomJWT && !pinataCustomGateway && !pinataCustomAccessAPI) {
+            pinata = new PinataSDK({
+                pinataJwt: import.meta.env.VITE_APP_PINATA_JWT,
+                pinataGatewayKey: import.meta.env.VITE_APP_PINATA_GATEWAY_KEY
+            })
+            console.log('taking')
+        } else {
+            console.log('throwinfg')
+            pinata = new PinataSDK({
+                pinataJwt: pinataCustomJWT!,
+                pinataGatewayKey: pinataCustomGateway!
+            })
+
+            pinataContext?.setToastMessage(`Uploading on your own gateway: ${pinataCustomGateway}`)
+            pinataContext?.setIsToast(true)
+        }
+        
 
         if (inFiles.length > 0) {
             setUploadingLoader(true)
@@ -60,7 +78,13 @@ async function uploadFile(pinataContext: PinataContextInterface, inFiles: File[]
                 console.log(upload)
                 setUploadingLoader(true)
                 
-                const url = `${import.meta.env.VITE_APP_PINATA_GATEWAY}${upload.IpfsHash}?pinataGatewayToken=${import.meta.env.VITE_APP_PINATA_GATEWAY_TOKEN}`
+                let url
+                if (!pinataCustomJWT && !pinataCustomGateway && !pinataCustomAccessAPI)
+                    url = `${import.meta.env.VITE_APP_PINATA_GATEWAY}${upload.IpfsHash}?pinataGatewayToken=${import.meta.env.VITE_APP_PINATA_GATEWAY_TOKEN}`
+                else {
+                    // const decryptedPinataAccessToken = cryptr.decrypt(pinataCustomAccessAPI!)
+                    url = `https://${pinataCustomGateway}/ipfs/${upload.IpfsHash}?pinataGatewayToken=${pinataCustomAccessAPI}`
+                }
 
                 try {
                     await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type).send({ from: pinataContext?.account })

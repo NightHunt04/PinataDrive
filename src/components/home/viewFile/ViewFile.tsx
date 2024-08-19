@@ -27,7 +27,7 @@ function ViewFile(): React.ReactElement {
         <div className='w-full flex flex-col items-center justify-center relative text-xs md:text-sm '>
             <img src="/assets/svg-blob.svg" className="absolute w-[70%] h-auto opacity-30 top-16 blur-[120px]"/>
 
-            <div className="w-[90%] md:w-[60%] flex flex-col z-20 items-center justify-center border-[1px] bg-[#fdfdfd] dark:bg-[#1a1a1a] dark:border-[#1a1a1a] rounded-t-[70px] md:rounded-t-[90px] shadow-lg mt-20 md:mt-36 px-6 py-5 pb-24">
+            <div className="w-[90%] md:w-[60%] flex flex-col z-10 items-center justify-center border-[1px] bg-[#fdfdfd] dark:bg-[#1a1a1a] dark:border-[#1a1a1a] rounded-t-[70px] md:rounded-t-[90px] shadow-lg mt-20 md:mt-36 px-6 py-5 pb-24">
                 <div className={`${pinataContext?.account ? 'hidden' : 'flex'} flex-col md:flex-row items-center justify-center md:px-12 py-2 w-full`}>
                     <div className='flex items-center justify-center'>
                         <img src="/assets/metat.png" className='w-[50px] h-auto object-cover' />
