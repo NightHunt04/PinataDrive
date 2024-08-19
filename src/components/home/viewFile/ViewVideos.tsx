@@ -26,10 +26,7 @@ function ViewVideos(): React.ReactElement {
 
     const handleDelete = async(ind: bigint[], hash: string[], storedPinataJWT: string[], storedPinataGateWayKey: string[]): Promise<void> => {
         setDeleteLoader(true)
-        
-        // if (!localStorage.getItem('userPinataJWT') && !localStorage.getItem('userPinataGateway') && !localStorage.getItem('userPinataAccessAPI'))
-        //     await pinataContext?.handleDeleteFile(ind, hash, pinataContext, false)
-        // else await pinataContext?.handleDeleteFile(ind, hash, pinataContext, true)
+
         await pinataContext?.handleDeleteFile(ind, hash, pinataContext, storedPinataJWT, storedPinataGateWayKey)
         
         setDeleteLoader(false)
