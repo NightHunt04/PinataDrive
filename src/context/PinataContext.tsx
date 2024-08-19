@@ -90,10 +90,27 @@ export const PinataProvider: React.FC<PinataContextProps> = (props) => {
             pinataContext?.setVideos(fetchedVideos)
             pinataContext?.setDocs(fetchedDocs)
 
-            const pinata = new PinataSDK({
-                pinataJwt: import.meta.env.VITE_APP_PINATA_JWT,
-                pinataGatewayKey: import.meta.env.VITE_APP_PINATA_GATEWAY_KEY
-            })
+            const pinataCustomJWT = localStorage.getItem('userPinataJWT')
+            const pinataCustomGateway = localStorage.getItem('userPinataGateway')
+            const pinataCustomAccessAPI = localStorage.getItem('userPinataAccessAPI')
+
+            let pinata
+            if (!pinataCustomJWT && !pinataCustomGateway && !pinataCustomAccessAPI) {
+                pinata = new PinataSDK({
+                    pinataJwt: import.meta.env.VITE_APP_PINATA_JWT,
+                    pinataGatewayKey: import.meta.env.VITE_APP_PINATA_GATEWAY_KEY
+                })
+                console.log('taking')
+            } else {
+                console.log('throwinfg')
+                pinata = new PinataSDK({
+                    pinataJwt: pinataCustomJWT!,
+                    pinataGatewayKey: `https://${pinataCustomGateway!}`
+                })
+
+                pinataContext?.setToastMessage(`Uploading on your own gateway: ${pinataCustomGateway}`)
+                pinataContext?.setIsToast(true)
+            }
 
             const unpin = await pinata.unpin(hash)
             console.log(unpin[0].status)
