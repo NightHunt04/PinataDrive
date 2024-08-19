@@ -24,7 +24,7 @@ interface PinataContextInterface {
     setVideos(files: _File[]): void
     docs: _File[]
     setDocs(files: _File[]): void
-    handleDeleteFile(ind: bigint[], hash: string[], pinataContext: PinataContextInterface): Promise<Response>
+    handleDeleteFile(ind: bigint[], hash: string[], pinataContext: PinataContextInterface, customGateway: boolean): Promise<Response>
 }
 
 interface _File {
@@ -33,6 +33,7 @@ interface _File {
     fileName: string
     time: number
     fileType: string
+    customGateway: boolean
 }
 
 
@@ -76,16 +77,19 @@ async function uploadFile(pinataContext: PinataContextInterface, inFiles: File[]
                 console.log(upload)
                 setUploadingLoader(true)
                 
+                // setting url based on the custom gateway
                 let url
                 if (!pinataCustomJWT && !pinataCustomGateway && !pinataCustomAccessAPI)
                     url = `${import.meta.env.VITE_APP_PINATA_GATEWAY}${upload.IpfsHash}?pinataGatewayToken=${import.meta.env.VITE_APP_PINATA_GATEWAY_TOKEN}`
-                else {
-                    // const decryptedPinataAccessToken = cryptr.decrypt(pinataCustomAccessAPI!)
+                else 
                     url = `https://${pinataCustomGateway}/ipfs/${upload.IpfsHash}?pinataGatewayToken=${pinataCustomAccessAPI}`
-                }
 
+                // posting on blokckchain
                 try {
-                    await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type).send({ from: pinataContext?.account })
+                    if (!pinataCustomJWT && !pinataCustomGateway && !pinataCustomAccessAPI)
+                        await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type, false).send({ from: pinataContext?.account })
+                    else await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type, true).send({ from: pinataContext?.account })
+
                     success = true
 
                     pinataContext.setToastMessage('Successfully uploaded!')

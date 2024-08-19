@@ -25,7 +25,7 @@ interface PinataContextInterface {
     setVideos(files: _File[]): void
     docs: _File[]
     setDocs(files: _File[]): void
-    handleDeleteFile(ind: bigint[], hash: string[], pinataContext: PinataContextInterface): Promise<Response>
+    handleDeleteFile(ind: bigint[], hash: string[], pinataContext: PinataContextInterface, customGateway: boolean): Promise<Response>
 }
 
 interface _File {
@@ -34,6 +34,7 @@ interface _File {
     fileName: string
     time: number
     fileType: string
+    customGateway: boolean
 }
 
 const connectMetaMask = async (pinataContext: PinataContextInterface | null): Promise<void> => {

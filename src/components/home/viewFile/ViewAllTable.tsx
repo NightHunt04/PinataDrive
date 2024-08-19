@@ -38,7 +38,12 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
         setDeleteLoader(true)
 
         try {
-            const response = await pinataContext?.handleDeleteFile(ind, hash, pinataContext)
+            let response 
+            
+            if (!localStorage.getItem('userPinataJWT') && !localStorage.getItem('userPinataGateway') && !localStorage.getItem('userPinataAccessAPI'))
+                response = await pinataContext?.handleDeleteFile(ind, hash, pinataContext, false)
+            else response = await pinataContext?.handleDeleteFile(ind, hash, pinataContext, true)
+            // const response = await pinataContext?.handleDeleteFile(ind, hash, pinataContext)
             
              if (response?.code === 1) {
                 pinataContext?.setToastMessage('Successfully deleted the file')

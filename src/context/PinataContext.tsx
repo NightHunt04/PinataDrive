@@ -25,7 +25,7 @@ interface PinataContextInterface {
     setVideos(files: _File[]): void
     docs: _File[]
     setDocs(files: _File[]): void
-    handleDeleteFile(ind: bigint[], hash: string[], pinataContext: PinataContextInterface): Promise<Response>
+    handleDeleteFile(ind: bigint[], hash: string[], pinataContext: PinataContextInterface, customGateway: boolean): Promise<Response>
 }
 
 interface PinataContextProps {
@@ -38,6 +38,7 @@ interface _File {
     fileName: string
     time: number
     fileType: string
+    customGateway: boolean
 }
 
 const PinataContext = createContext<PinataContextInterface | null>(null)
@@ -72,7 +73,7 @@ export const PinataProvider: React.FC<PinataContextProps> = (props) => {
     const [isToast, setIsToast] = useState<boolean>(false)
     const [toastMessage, setToastMessage] = useState<string>('')
 
-    const handleDeleteFile = async(ind: bigint[], hash: string[], pinataContext: PinataContextInterface): Promise<Response> => {
+    const handleDeleteFile = async(ind: bigint[], hash: string[], pinataContext: PinataContextInterface, customGateway: boolean): Promise<Response> => {
         try {
             await pinataContext?.contract.methods.deleteFile(ind).send({ from: pinataContext?.account })
             
@@ -90,26 +91,21 @@ export const PinataProvider: React.FC<PinataContextProps> = (props) => {
             pinataContext?.setVideos(fetchedVideos)
             pinataContext?.setDocs(fetchedDocs)
 
-            const pinataCustomJWT = localStorage.getItem('userPinataJWT')
-            const pinataCustomGateway = localStorage.getItem('userPinataGateway')
-            const pinataCustomAccessAPI = localStorage.getItem('userPinataAccessAPI')
-
             let pinata
-            if (!pinataCustomJWT && !pinataCustomGateway && !pinataCustomAccessAPI) {
+            const customPinataJWT = localStorage.getItem('userPinataJWT')
+            const customGatewayKey = localStorage.getItem('userPinataGateway')
+            const customGatewayToken = localStorage.getItem('userPinataAccessAPI')
+
+            if (!customGateway && !customPinataJWT && !customGatewayKey && !customGatewayToken) {
                 pinata = new PinataSDK({
                     pinataJwt: import.meta.env.VITE_APP_PINATA_JWT,
                     pinataGatewayKey: import.meta.env.VITE_APP_PINATA_GATEWAY_KEY
                 })
-                console.log('taking')
             } else {
-                console.log('throwinfg')
                 pinata = new PinataSDK({
-                    pinataJwt: pinataCustomJWT!,
-                    pinataGatewayKey: `https://${pinataCustomGateway!}`
+                    pinataJwt: customPinataJWT!,
+                    pinataGatewayKey: `https://${customGatewayKey}`
                 })
-
-                pinataContext?.setToastMessage(`Uploading on your own gateway: ${pinataCustomGateway}`)
-                pinataContext?.setIsToast(true)
             }
 
             const unpin = await pinata.unpin(hash)
