@@ -8,6 +8,8 @@ interface _File {
     fileName: string
     time: number
     fileType: string
+    storedPinataJWT: string
+    storedPinataGatewayKey: string
 }
 
 interface params {
@@ -34,16 +36,16 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
     const [deleteLoader, setDeleteLoader] = useState<boolean>(false)
     const [viewFileStatus, setViewFileStatus] = useState<ViewStatus>({view: false, url: '', type: ''})
 
-    const handleDelete = async(ind: bigint[], hash: string[]): Promise<void> => {
+    const handleDelete = async(ind: bigint[], hash: string[], storedPinataJWT: string[], storedPinataGateWayKey: string[]): Promise<void> => {
         setDeleteLoader(true)
 
         try {
-            let response 
+            // let response 
             
-            if (!localStorage.getItem('userPinataJWT') && !localStorage.getItem('userPinataGateway') && !localStorage.getItem('userPinataAccessAPI'))
-                response = await pinataContext?.handleDeleteFile(ind, hash, pinataContext, false)
-            else response = await pinataContext?.handleDeleteFile(ind, hash, pinataContext, true)
-            // const response = await pinataContext?.handleDeleteFile(ind, hash, pinataContext)
+            // if (!localStorage.getItem('userPinataJWT') && !localStorage.getItem('userPinataGateway') && !localStorage.getItem('userPinataAccessAPI'))
+            //     response = await pinataContext?.handleDeleteFile(ind, hash, pinataContext, false)
+            // else response = await pinataContext?.handleDeleteFile(ind, hash, pinataContext, true)
+            const response = await pinataContext?.handleDeleteFile(ind, hash, pinataContext, storedPinataJWT, storedPinataGateWayKey)
             
              if (response?.code === 1) {
                 pinataContext?.setToastMessage('Successfully deleted the file')
@@ -117,16 +119,23 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
             const callDeleteFunc = async(): Promise<void> => {
                 setDeleteAllLoader(true)
 
-                await handleDelete(selectedNumberInd, hashes)
+                await handleDelete(selectedNumberInd, hashes, storedPinataJWT, storedPinataGateWayKey)
 
                 setDeleteSelectedItems(false)
                 setDeleteAllLoader(false)
             }
 
             let hashes: string[] = []
+            let storedPinataJWT: string[] = []
+            let storedPinataGateWayKey: string[] = []
             pinataContext?.files.map((file: _File, index: number) => {
                 if (selectedNumber[index]) 
                     hashes.push(file.url.split('/')[4]?.split('?')[0])
+                
+                if (file.storedPinataJWT && file.storedPinataGatewayKey) {
+                    storedPinataJWT.push(file.storedPinataJWT)
+                    storedPinataGateWayKey.push(file.storedPinataGatewayKey)
+                }
             })
 
             callDeleteFunc()
@@ -201,7 +210,7 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
                                     <button onClick={() => {
                                         setDeleteLoaderNumber(index)
                                         setDeleteFileNumber(-1)
-                                        handleDelete([file.ind], [file.url.split('/')[4]?.split('?')[0]])
+                                        handleDelete([file.ind], [file.url.split('/')[4]?.split('?')[0]], [file.storedPinataJWT], [file.storedPinataGatewayKey])
                                     }} className='text-green-600 w-[25px] h-[25px] md:w-[35px] md:h-[35px] rounded-full dark:hover:bg-[#1c1c1c]'>
                                         <i className="fa-solid fa-check"></i>
                                     </button>

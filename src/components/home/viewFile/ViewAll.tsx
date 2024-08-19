@@ -8,6 +8,8 @@ interface _File {
     fileName: string
     time: number
     fileType: string
+    storedPinataJWT: string
+    storedPinataGatewayKey: string
 }
 
 interface ViewStatus {
@@ -23,12 +25,13 @@ function ViewAll(): React.ReactElement {
     const [viewFileStatus, setViewFileStatus] = useState<ViewStatus>({view: false, url: '', type: ''})
     const pinataContext = usePinataContext()
 
-    const handleDelete = async(ind: bigint[], hash: string[]): Promise<void> => {
+    const handleDelete = async(ind: bigint[], hash: string[], storedPinataJWT: string[], storedPinataGateWayKey: string[]): Promise<void> => {
         setDeleteLoader(true)
 
-        if (!localStorage.getItem('userPinataJWT') && !localStorage.getItem('userPinataGateway') && !localStorage.getItem('userPinataAccessAPI'))
-            await pinataContext?.handleDeleteFile(ind, hash, pinataContext, false)
-        else await pinataContext?.handleDeleteFile(ind, hash, pinataContext, true)
+        await pinataContext?.handleDeleteFile(ind, hash, pinataContext, storedPinataJWT, storedPinataGateWayKey)
+        // if (!localStorage.getItem('userPinataJWT') && !localStorage.getItem('userPinataGateway') && !localStorage.getItem('userPinataAccessAPI'))
+        //     await pinataContext?.handleDeleteFile(ind, hash, pinataContext, false)
+        // else await pinataContext?.handleDeleteFile(ind, hash, pinataContext, true)
 
         setDeleteLoader(false)
     }
@@ -73,7 +76,7 @@ function ViewAll(): React.ReactElement {
                         </div>
                         
                         {deleteFileNumber === index && 
-                            <div onClick={() => handleDelete([file.ind], [file.url.split('/')[4]?.split('?')[0]])} className='w-full inset-0 relative z-20 bg-black'>
+                            <div onClick={() => handleDelete([file.ind], [file.url.split('/')[4]?.split('?')[0]], [file.storedPinataJWT], [file.storedPinataGatewayKey])} className='w-full inset-0 relative z-20 bg-black'>
                                 <div className='absolute top-12 text-white font-semibold right-1 px-3 py-2 rounded-lg shadow-lg hover:opacity-70 bg-red-600'>
                                     {deleteLoader ? 
                                     <p>

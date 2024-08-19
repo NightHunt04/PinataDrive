@@ -25,7 +25,7 @@ interface PinataContextInterface {
     setVideos(files: _File[]): void
     docs: _File[]
     setDocs(files: _File[]): void
-    handleDeleteFile(ind: bigint[], hash: string[], pinataContext: PinataContextInterface, customGateway: boolean): Promise<Response>
+    handleDeleteFile(ind: bigint[], hash: string[], pinataContext: PinataContextInterface, storedPinataJWT: string[], storedPinataGateWayKey: string[]): Promise<Response>
 }
 
 interface PinataContextProps {
@@ -38,7 +38,8 @@ interface _File {
     fileName: string
     time: number
     fileType: string
-    customGateway: boolean
+    storedPinataJWT: string
+    storedPinataGatewayKey: string
 }
 
 const PinataContext = createContext<PinataContextInterface | null>(null)
@@ -73,7 +74,7 @@ export const PinataProvider: React.FC<PinataContextProps> = (props) => {
     const [isToast, setIsToast] = useState<boolean>(false)
     const [toastMessage, setToastMessage] = useState<string>('')
 
-    const handleDeleteFile = async(ind: bigint[], hash: string[], pinataContext: PinataContextInterface, customGateway: boolean): Promise<Response> => {
+    const handleDeleteFile = async(ind: bigint[], hash: string[], pinataContext: PinataContextInterface, storedPinataJWT: string[], storedPinataGateWayKey: string[]): Promise<Response> => {
         try {
             await pinataContext?.contract.methods.deleteFile(ind).send({ from: pinataContext?.account })
             
@@ -92,26 +93,39 @@ export const PinataProvider: React.FC<PinataContextProps> = (props) => {
             pinataContext?.setDocs(fetchedDocs)
 
             let pinata
-            const customPinataJWT = localStorage.getItem('userPinataJWT')
-            const customGatewayKey = localStorage.getItem('userPinataGateway')
-            const customGatewayToken = localStorage.getItem('userPinataAccessAPI')
+            // const customPinataJWT = localStorage.getItem('userPinataJWT')
+            // const customGatewayKey = localStorage.getItem('userPinataGateway')
+            // const customGatewayToken = localStorage.getItem('userPinataAccessAPI')
 
-            if (!customGateway && !customPinataJWT && !customGatewayKey && !customGatewayToken) {
+            // if (!customGateway && !customPinataJWT && !customGatewayKey && !customGatewayToken) {
+            if (storedPinataJWT.length === 1 && storedPinataGateWayKey.length) {
+                // if (customGateway[0]) {
+                //     pinata = new PinataSDK({
+                //         pinataJwt: customPinataJWT!,
+                //         pinataGatewayKey: `https://${customGatewayKey}`
+                //     })
+                // } else {
+                //     pinata = new PinataSDK({
+                //         pinataJwt: import.meta.env.VITE_APP_PINATA_JWT,
+                //         pinataGatewayKey: import.meta.env.VITE_APP_PINATA_GATEWAY_KEY
+                //     })
+                // }
                 pinata = new PinataSDK({
-                    pinataJwt: import.meta.env.VITE_APP_PINATA_JWT,
-                    pinataGatewayKey: import.meta.env.VITE_APP_PINATA_GATEWAY_KEY
-                })
-            } else {
-                pinata = new PinataSDK({
-                    pinataJwt: customPinataJWT!,
-                    pinataGatewayKey: `https://${customGatewayKey}`
+                    pinataJwt: storedPinataJWT[0],
+                    pinataGatewayKey: storedPinataGateWayKey[0]
                 })
             }
+            // } else {
+            //     pinata = new PinataSDK({
+            //         pinataJwt: customPinataJWT!,
+            //         pinataGatewayKey: `https://${customGatewayKey}`
+            //     })
+            // }
 
-            const unpin = await pinata.unpin(hash)
-            console.log(unpin[0].status)
+            const unpin = await pinata?.unpin(hash)
+            console.log('here', unpin![0].status)
 
-            if (unpin[0].status) {
+            if (unpin![0].status) {
                 pinataContext?.setToastMessage('Successfully deleted!')
                 pinataContext?.setIsToast(true)
             } else {

@@ -28,6 +28,16 @@
 				"internalType": "string",
 				"name": "_fileType",
 				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_storedPinataJWT",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_storedPinataGateWayKey",
+				"type": "string"
 			}
 		],
 		"name": "setFile",
@@ -65,6 +75,16 @@
 						"internalType": "string",
 						"name": "fileType",
 						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "storedPinataJWT",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "storedPinataGateWayKey",
+						"type": "string"
 					}
 				],
 				"internalType": "struct PinataDrive.File[]",
@@ -76,24 +96,3 @@
 		"type": "function"
 	}
 ]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

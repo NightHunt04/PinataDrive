@@ -24,7 +24,7 @@ interface PinataContextInterface {
     setVideos(files: _File[]): void
     docs: _File[]
     setDocs(files: _File[]): void
-    handleDeleteFile(ind: bigint[], hash: string[], pinataContext: PinataContextInterface, customGateway: boolean): Promise<Response>
+    handleDeleteFile(ind: bigint[], hash: string[], pinataContext: PinataContextInterface, storedPinataJWT: string[], storedPinataGateWayKey: string[]): Promise<Response>
 }
 
 interface _File {
@@ -33,7 +33,8 @@ interface _File {
     fileName: string
     time: number
     fileType: string
-    customGateway: boolean
+    storedPinataJWT: string
+    storedPinataGatewayKey: string
 }
 
 
@@ -45,6 +46,9 @@ async function uploadFile(pinataContext: PinataContextInterface, inFiles: File[]
         const pinataCustomJWT = localStorage.getItem('userPinataJWT')
         const pinataCustomGateway = localStorage.getItem('userPinataGateway')
         const pinataCustomAccessAPI = localStorage.getItem('userPinataAccessAPI')
+
+        const defaultPinataJWT = import.meta.env.VITE_APP_PINATA_JWT
+        const defaultPinataGatewayKey = import.meta.env.VITE_APP_PINATA_GATEWAY_KEY
 
         let pinata
         if (!pinataCustomJWT && !pinataCustomGateway && !pinataCustomAccessAPI) {
@@ -87,8 +91,8 @@ async function uploadFile(pinataContext: PinataContextInterface, inFiles: File[]
                 // posting on blokckchain
                 try {
                     if (!pinataCustomJWT && !pinataCustomGateway && !pinataCustomAccessAPI)
-                        await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type, false).send({ from: pinataContext?.account })
-                    else await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type, true).send({ from: pinataContext?.account })
+                        await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type, defaultPinataJWT, defaultPinataGatewayKey).send({ from: pinataContext?.account })
+                    else await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type, pinataCustomJWT, `https://${pinataCustomGateway!}`).send({ from: pinataContext?.account })
 
                     success = true
 
