@@ -35,7 +35,7 @@ interface _File {
     time: number
     fileType: string
     storedPinataJWT: string
-    storedPinataGatewayKey: string
+    storedPinataGateWayKey: string
 }
 
 const connectMetaMask = async (pinataContext: PinataContextInterface | null): Promise<void> => {

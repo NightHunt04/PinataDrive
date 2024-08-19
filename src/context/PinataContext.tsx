@@ -39,7 +39,14 @@ interface _File {
     time: number
     fileType: string
     storedPinataJWT: string
-    storedPinataGatewayKey: string
+    storedPinataGateWayKey: string
+}
+
+interface JwtMap {
+    [jwt: string]: { 
+        gateway: string, 
+        hashes: string[] 
+    }
 }
 
 const PinataContext = createContext<PinataContextInterface | null>(null)
@@ -92,48 +99,78 @@ export const PinataProvider: React.FC<PinataContextProps> = (props) => {
             pinataContext?.setVideos(fetchedVideos)
             pinataContext?.setDocs(fetchedDocs)
 
-            let pinata
+            let pinata, response
             // const customPinataJWT = localStorage.getItem('userPinataJWT')
             // const customGatewayKey = localStorage.getItem('userPinataGateway')
             // const customGatewayToken = localStorage.getItem('userPinataAccessAPI')
 
             // if (!customGateway && !customPinataJWT && !customGatewayKey && !customGatewayToken) {
-            if (storedPinataJWT.length === 1 && storedPinataGateWayKey.length) {
-                // if (customGateway[0]) {
-                //     pinata = new PinataSDK({
-                //         pinataJwt: customPinataJWT!,
-                //         pinataGatewayKey: `https://${customGatewayKey}`
-                //     })
-                // } else {
-                //     pinata = new PinataSDK({
-                //         pinataJwt: import.meta.env.VITE_APP_PINATA_JWT,
-                //         pinataGatewayKey: import.meta.env.VITE_APP_PINATA_GATEWAY_KEY
-                //     })
-                // }
+            if (storedPinataJWT.length === 1 && storedPinataGateWayKey.length === 1) {
                 pinata = new PinataSDK({
                     pinataJwt: storedPinataJWT[0],
                     pinataGatewayKey: storedPinataGateWayKey[0]
                 })
-            }
-            // } else {
-            //     pinata = new PinataSDK({
-            //         pinataJwt: customPinataJWT!,
-            //         pinataGatewayKey: `https://${customGatewayKey}`
-            //     })
-            // }
 
-            const unpin = await pinata?.unpin(hash)
-            console.log('here', unpin![0].status)
+                const unpin = await pinata?.unpin(hash)
+                console.log('here', unpin![0].status)
 
-            if (unpin![0].status) {
-                pinataContext?.setToastMessage('Successfully deleted!')
-                pinataContext?.setIsToast(true)
+                if (unpin![0].status) {
+                    pinataContext?.setToastMessage('Successfully deleted!')
+                    pinataContext?.setIsToast(true)
+                } else {
+                    pinataContext?.setToastMessage('Something went wrong!')
+                    pinataContext?.setIsToast(true)
+                }
+
+                response = { code: 1, msg: 'success'}
+
             } else {
-                pinataContext?.setToastMessage('Something went wrong!')
-                pinataContext?.setIsToast(true)
+                let jwtMap: JwtMap = {
+                    [storedPinataJWT[0]]: {
+                        gateway: storedPinataGateWayKey[0],
+                        hashes: [hash[0]]
+                    }
+                }
+
+                if (hash.length === storedPinataJWT.length) {
+                    for (let i = 1; i < hash.length; i++) {
+                        if (!jwtMap[storedPinataJWT[i]]) {
+                            jwtMap[storedPinataJWT[i]] = { gateway: storedPinataGateWayKey[i], hashes: [hash[i]] }
+                        } else {
+                            jwtMap[storedPinataJWT[i]].hashes.push(hash[i])
+                        }
+                    }
+                }
+
+                let flag = false
+
+                for (let jwt in jwtMap) {
+                    console.log(jwt, jwtMap[jwt].gateway, jwtMap[jwt].hashes)
+
+                    pinata = new PinataSDK({
+                        pinataJwt: jwt,
+                        pinataGatewayKey: jwtMap[jwt].gateway
+                    })
+
+                    const unpin = await pinata?.unpin(jwtMap[jwt].hashes)
+
+                    if (unpin![0].status !== 'OK') 
+                        flag = true
+                }
+
+                if (!flag) {
+                    pinataContext?.setToastMessage('Successfully deleted!')
+                    pinataContext?.setIsToast(true)
+                } else {
+                    pinataContext?.setToastMessage('Something went wrong!')
+                    pinataContext?.setIsToast(true)
+                }
+
+                response = { code: 1, msg: 'success'}
             }
 
-            return { code: 1, msg: 'success'}
+            return response!
+
         } catch (err) {
             console.log(err)
             return { code: 0, msg: 'failure'}

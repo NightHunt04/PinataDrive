@@ -9,7 +9,7 @@ interface _File {
     time: number
     fileType: string
     storedPinataJWT: string
-    storedPinataGatewayKey: string
+    storedPinataGateWayKey: string
 }
 
 interface params {
@@ -129,11 +129,13 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
             let storedPinataJWT: string[] = []
             let storedPinataGateWayKey: string[] = []
 
+            console.log('doing', storedPinataJWT)
+
             pinataContext?.files.map((file: _File, index: number) => {
                 if (selectedNumber[index]) {
                     hashes.push(file.url.split('/')[4]?.split('?')[0])
                     storedPinataJWT.push(file.storedPinataJWT)
-                    storedPinataGateWayKey.push(file.storedPinataGatewayKey)
+                    storedPinataGateWayKey.push(file.storedPinataGateWayKey)
                 }
             })
 
@@ -209,7 +211,7 @@ function ViewAllTable({ setDeleteAllLoader, selectAllChecks, setShowDeleteButton
                                     <button onClick={() => {
                                         setDeleteLoaderNumber(index)
                                         setDeleteFileNumber(-1)
-                                        handleDelete([file.ind], [file.url.split('/')[4]?.split('?')[0]], [file.storedPinataJWT], [file.storedPinataGatewayKey])
+                                        handleDelete([file.ind], [file.url.split('/')[4]?.split('?')[0]], [file.storedPinataJWT], [file.storedPinataGateWayKey])
                                     }} className='text-green-600 w-[25px] h-[25px] md:w-[35px] md:h-[35px] rounded-full dark:hover:bg-[#1c1c1c]'>
                                         <i className="fa-solid fa-check"></i>
                                     </button>

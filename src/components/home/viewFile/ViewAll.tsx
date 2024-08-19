@@ -9,7 +9,7 @@ interface _File {
     time: number
     fileType: string
     storedPinataJWT: string
-    storedPinataGatewayKey: string
+    storedPinataGateWayKey: string
 }
 
 interface ViewStatus {
@@ -76,7 +76,7 @@ function ViewAll(): React.ReactElement {
                         </div>
                         
                         {deleteFileNumber === index && 
-                            <div onClick={() => handleDelete([file.ind], [file.url.split('/')[4]?.split('?')[0]], [file.storedPinataJWT], [file.storedPinataGatewayKey])} className='w-full inset-0 relative z-20 bg-black'>
+                            <div onClick={() => handleDelete([file.ind], [file.url.split('/')[4]?.split('?')[0]], [file.storedPinataJWT], [file.storedPinataGateWayKey])} className='w-full inset-0 relative z-20 bg-black'>
                                 <div className='absolute top-12 text-white font-semibold right-1 px-3 py-2 rounded-lg shadow-lg hover:opacity-70 bg-red-600'>
                                     {deleteLoader ? 
                                     <p>

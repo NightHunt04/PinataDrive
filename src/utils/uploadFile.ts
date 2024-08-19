@@ -34,7 +34,7 @@ interface _File {
     time: number
     fileType: string
     storedPinataJWT: string
-    storedPinataGatewayKey: string
+    storedPinataGateWayKey: string
 }
 
 
@@ -45,6 +45,7 @@ async function uploadFile(pinataContext: PinataContextInterface, inFiles: File[]
     } else {
         const pinataCustomJWT = localStorage.getItem('userPinataJWT')
         const pinataCustomGateway = localStorage.getItem('userPinataGateway')
+        const _pinataCustomGateway = 'https://' + pinataCustomGateway
         const pinataCustomAccessAPI = localStorage.getItem('userPinataAccessAPI')
 
         const defaultPinataJWT = import.meta.env.VITE_APP_PINATA_JWT
@@ -92,7 +93,7 @@ async function uploadFile(pinataContext: PinataContextInterface, inFiles: File[]
                 try {
                     if (!pinataCustomJWT && !pinataCustomGateway && !pinataCustomAccessAPI)
                         await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type, defaultPinataJWT, defaultPinataGatewayKey).send({ from: pinataContext?.account })
-                    else await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type, pinataCustomJWT, `https://${pinataCustomGateway!}`).send({ from: pinataContext?.account })
+                    else await pinataContext?.contract?.methods.setFile(url, inFiles[i].name, inFiles[i].type, pinataCustomJWT, _pinataCustomGateway).send({ from: pinataContext?.account })
 
                     success = true
 
