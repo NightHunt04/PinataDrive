@@ -37,8 +37,6 @@ interface _File {
 
 
 async function uploadFile(pinataContext: PinataContextInterface, inFiles: File[], setInFiles: React.Dispatch<React.SetStateAction<File[]>>, setUploadingLoader: React.Dispatch<React.SetStateAction<boolean>>, setUploadedFileCounter: React.Dispatch<React.SetStateAction<number>>): Promise<void> {
-    // const cryptr = new Cryptr(import.meta.env.VITE_APP_CRYPTR_SECRET_KEY)
-
     if (!pinataContext?.account) {
         pinataContext?.setToastMessage('Connect MetaMask wallet by clicking on the button "Connect Wallet" down below in the space area.')
         pinataContext?.setIsToast(true)
