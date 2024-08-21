@@ -167,7 +167,7 @@ function UploadComponent(): React.ReactElement {
 
                             <button onClick={handleCustomization} className="px-3 py-2 md:px-6 rounded-md font-semibold border-[0.5px] transition-all duration-200 w-full border-green-600 mt-5 bg-green-600 hover:bg-green-700 text-white shadow-lg">Submit</button>
 
-                            <p className="mt-10 text-lg md:text-xl text-gray-600 dark:text-gray-300 font-semibold">(But I don't know what you are talking about) For noobs</p>
+                            {/* <p className="mt-10 text-lg md:text-xl text-gray-600 dark:text-gray-300 font-semibold"></p> */}
                             <p className="mt-1 text-sm md:text-lg text-gray-500 dark:text-gray-400">How do I get my JWT, Gateway and Access token?</p>
                             <p className="mt-7 md:mt-10">Refer to the document of pinata below (click to redirect)</p>
                             <a href="https://docs.pinata.cloud/account-management/api-keys" target="_blank" className="p-2 font-semibold mt-1 rounded-md border-[0.5px] hover:bg-purple-600 hover:text-white transition-all duration-200 border-purple-600">https://docs.pinata.cloud/account-management/api-keys</a>
